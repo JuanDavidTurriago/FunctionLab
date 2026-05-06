@@ -24,8 +24,8 @@ export default function Conversion() {
 
   return (
     <PageLayout
-      title="Conversion de bases"
-      description="Conversion de enteros entre bases 2 y 36 con validacion de digitos."
+      title="Error y binarios"
+      description="Conversion entre bases con fracciones y calculo de errores absoluto y relativo."
     >
       {error && <p className="status-error">{error}</p>}
 
@@ -38,15 +38,27 @@ export default function Conversion() {
         <section className="panel">
           <h3>Resultado</h3>
           {result ? (
-            <ResultSummary
-              items={[
-                { label: 'Original', value: `${result.originalValue} (base ${result.fromBase})` },
-                { label: 'Decimal', value: result.decimalValue },
-                { label: 'Convertido', value: `${result.convertedValue} (base ${result.toBase})` },
-              ]}
-            />
+            result.type === 'error' ? (
+              <ResultSummary
+                items={[
+                  { label: 'Valor real', value: result.actualValue },
+                  { label: 'Aproximacion', value: result.approximateValue },
+                  { label: 'Error absoluto', value: result.absoluteError },
+                  { label: 'Error relativo', value: result.relativeError },
+                  { label: 'Error porcentual', value: `${Number(result.percentageError.toFixed(8))}%` },
+                ]}
+              />
+            ) : (
+              <ResultSummary
+                items={[
+                  { label: 'Original', value: `${result.originalValue} (base ${result.fromBase})` },
+                  { label: 'Decimal', value: result.decimalValue },
+                  { label: 'Convertido', value: `${result.convertedValue} (base ${result.toBase})` },
+                ]}
+              />
+            )
           ) : (
-            <p className="muted">Ejecuta una conversion para ver el resultado.</p>
+            <p className="muted">Ejecuta una conversion o calcula errores para ver el resultado.</p>
           )}
         </section>
       </div>
