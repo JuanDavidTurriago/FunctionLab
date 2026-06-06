@@ -32,6 +32,8 @@ export const interpolateNewton = ({ points, value }: NewtonInterpolationInput) =
   const coefficients = points.map((point) => point.y);
   const dividedDifferenceFormulas: string[] = [];
 
+  // La tabla se actualiza en el mismo arreglo, desde el final hacia el inicio,
+  // para no sobrescribir valores que aun se necesitan en el nivel actual.
   for (let j = 1; j < points.length; j += 1) {
     for (let i = points.length - 1; i >= j; i -= 1) {
       const upperValue = coefficients[i];
@@ -43,6 +45,7 @@ export const interpolateNewton = ({ points, value }: NewtonInterpolationInput) =
     }
   }
 
+  // Forma anidada de Newton: evalua el polinomio con menos multiplicaciones.
   const evaluate = (x: number) => {
     let result = coefficients[points.length - 1];
 

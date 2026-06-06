@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Line } from 'react-chartjs-2';
 import { cartesianOptions } from './chartConfig';
 
+// Solo se incluyen las iteraciones alcanzadas por el reproductor.
 const buildBisectionDatasets = (iterations, step) => {
   const visibleIterations = iterations.slice(0, step);
   const current = visibleIterations.at(-1);
@@ -75,6 +76,7 @@ const buildNewtonDatasets = (iterations, step) => {
     },
     {
       label: `Tangente iteracion ${current.iteration}`,
+      // La recta une (x_n, f(x_n)) con el siguiente corte sobre el eje x.
       data: [
         { x: current.x, y: current.fx },
         { x: current.next, y: 0 },
@@ -95,6 +97,7 @@ export default function RootIterationChart({ method, result }) {
   const total = result.iterations.length;
 
   useEffect(() => {
+    // Un resultado nuevo siempre comienza desde su primera iteracion.
     setStep(1);
     setPlaying(false);
   }, [result]);
@@ -104,6 +107,7 @@ export default function RootIterationChart({ method, result }) {
       return undefined;
     }
 
+    // El temporizador avanza la construccion grafica hasta la ultima iteracion.
     const timer = window.setInterval(() => {
       setStep((current) => {
         if (current >= total) {
@@ -119,6 +123,7 @@ export default function RootIterationChart({ method, result }) {
   }, [playing, total]);
 
   if (total === 0) {
+    // Biseccion puede terminar sin iterar si un extremo ya es una raiz exacta.
     const data = {
       datasets: [
         {
@@ -154,6 +159,7 @@ export default function RootIterationChart({ method, result }) {
       : buildNewtonDatasets(result.iterations, step);
 
   const data = {
+    // La curva base permanece fija y se superponen los elementos del metodo.
     datasets: [
       {
         label: 'f(x)',

@@ -12,6 +12,7 @@ export default function Taylor() {
   const [error, setError] = useState('');
   const [result, setResult] = useState(null);
 
+  // La pagina coordina la peticion y conserva el resultado; el calculo vive en el backend.
   const handleSubmit = async (payload) => {
     try {
       setLoading(true);
@@ -64,6 +65,7 @@ export default function Taylor() {
 
       {result?.chart && (
         <>
+          {/* Las graficas solo se montan cuando la API entrega puntos validos. */}
           <section className="visualization-section">
             <div className="visualization-heading">
               <div>

@@ -18,6 +18,7 @@ export default function SystemNewtonForm({ loading, onSubmit }) {
 
   const handleSubmit = (event) => {
     event.preventDefault();
+    // Las dos funciones son simbolicas; punto inicial, tolerancia e iteraciones son numericos.
     onSubmit({
       f1: form.f1,
       f2: form.f2,

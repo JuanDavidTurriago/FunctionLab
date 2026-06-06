@@ -19,6 +19,7 @@ export default function TaylorForm({ onSubmit, loading }) {
 
   const handleSubmit = (event) => {
     event.preventDefault();
+    // Los inputs HTML guardan texto; el contrato de la API espera valores numericos.
     onSubmit({
       functionExpression: form.functionExpression,
       point: Number(form.point),

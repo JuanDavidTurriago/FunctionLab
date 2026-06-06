@@ -24,6 +24,7 @@ export const solveNewton = ({
   }
 
   const fx = parse(functionExpression);
+  // La derivada simbolica se calcula una sola vez antes del proceso iterativo.
   const dfx = derivative(fx, 'x');
 
   let current = initialGuess;
@@ -33,6 +34,7 @@ export const solveNewton = ({
     `x_{k+1}=x_k-\\frac{f(x_k)}{f'(x_k)}`,
   ];
 
+  // Newton proyecta la tangente desde x_k hasta el eje x para obtener x_(k+1).
   for (let iteration = 1; iteration <= maxIterations; iteration += 1) {
     const value = Number(fx.evaluate({ x: current }));
     const slope = Number(dfx.evaluate({ x: current }));
@@ -42,6 +44,7 @@ export const solveNewton = ({
     }
 
     if (slope === 0) {
+      // Una tangente horizontal impediria dividir por f'(x_k).
       throw new Error('La derivada se anulo durante la iteracion de Newton.');
     }
 
@@ -54,6 +57,8 @@ export const solveNewton = ({
     );
 
     if (error < tolerance) {
+      // El dominio incluye todas las aproximaciones para que ninguna quede
+      // fuera de la grafica de convergencia.
       const domain = getPaddedDomain(
         [initialGuess, next, ...iterations.flatMap((item) => [item.x, item.next])],
         1,

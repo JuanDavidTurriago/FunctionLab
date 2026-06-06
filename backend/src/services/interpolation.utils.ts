@@ -10,6 +10,7 @@ export const buildInterpolationChart = (
   value: number,
   evaluate: (x: number) => number,
 ) => {
+  // El dominio incluye todos los nodos y el punto donde se evalua el polinomio.
   const domain = getPaddedDomain([...points.map((point) => point.x), value], 0.5);
 
   return {

@@ -17,6 +17,7 @@ export default function BisectionForm({ loading, onSubmit }) {
 
   const handleSubmit = (event) => {
     event.preventDefault();
+    // Se normalizan limites y criterios de parada antes de llamar a la pagina.
     onSubmit({
       functionExpression: form.functionExpression,
       left: Number(form.left),

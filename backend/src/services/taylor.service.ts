@@ -22,6 +22,7 @@ const assertFinite = (value: number, fieldName: string) => {
 };
 
 export const calculateTaylorSeries = ({ functionExpression, point, value, order }: TaylorInput) => {
+  // Se valida antes de pasar expresiones a mathjs para producir errores claros.
   if (!functionExpression?.trim()) {
     throw new Error('La funcion no puede estar vacia.');
   }
@@ -39,6 +40,8 @@ export const calculateTaylorSeries = ({ functionExpression, point, value, order 
   let approximation = 0;
   let currentDerivative = parse(functionExpression);
 
+  // En cada vuelta se evalua f^(n)(a), se calcula f^(n)(a)/n! y se
+  // acumula el termino correspondiente tanto simbolica como numericamente.
   for (let n = 0; n <= order; n += 1) {
     const derivativeAtPoint = Number(currentDerivative.evaluate({ x: point }));
     assertFinite(derivativeAtPoint, `La derivada de orden ${n}`);
@@ -53,17 +56,23 @@ export const calculateTaylorSeries = ({ functionExpression, point, value, order 
     terms.push(`${toRounded(coefficient)}${power ? ` ${power}` : ''}`.trim());
     approximation += coefficient * (value - point) ** n;
     partialApproximations.push(toRounded(approximation));
+
+    // mathjs deriva el nodo actual; asi se obtiene la derivada de orden n+1.
     currentDerivative = derivative(currentDerivative, 'x');
   }
 
+  // El valor real solo se usa para medir el error de la aproximacion.
   const expectedValue = evaluateExpression(functionExpression, value);
   assertFinite(expectedValue, 'El valor esperado');
   const domain = getPaddedDomain([point, value], 1);
   const evaluatePolynomial = (x: number) => {
+    // Esta evaluacion usa los coeficientes ya calculados y alimenta la grafica.
     return coefficients.reduce((total, coefficient, index) => {
       return total + coefficient * (x - point) ** index;
     }, 0);
   };
+
+  // Se transforma la representacion legible a una expresion compatible con LaTeX.
   const polynomialLatex = terms
     .map((term, index) => {
       const sanitized = term
@@ -86,6 +95,7 @@ export const calculateTaylorSeries = ({ functionExpression, point, value, order 
     expectedValue: toRounded(expectedValue),
     absoluteError: toRounded(Math.abs(expectedValue - approximation)),
     chart: {
+      // Se entregan datos, no componentes visuales: Chart.js vive en el frontend.
       labels: partialApproximations.map((_, index) => `n=${index}`),
       values: partialApproximations,
       functionPoints: sampleFunction((x) => evaluateExpression(functionExpression, x), domain.start, domain.end),
@@ -97,6 +107,7 @@ export const calculateTaylorSeries = ({ functionExpression, point, value, order 
         polynomialValue: approximation,
       },
     },
+    // Las formulas se generan con los valores reales usados en este calculo.
     procedure: { formulas: procedureFormulas },
   };
 };

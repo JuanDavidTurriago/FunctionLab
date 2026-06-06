@@ -45,6 +45,7 @@ const fromBaseToDecimal = (value: string, base: number) => {
   const unsignedValue = value.replace(/^-/, '');
   const [integerPart = '0', fractionalPart = ''] = unsignedValue.split('.');
 
+  // La parte entera usa Horner; la fraccion suma digito * base^(-posicion).
   const integerValue = [...integerPart].reduce((total, digit) => total * base + digits.indexOf(digit), 0);
   const fractionalValue = [...fractionalPart].reduce((total, digit, index) => {
     return total + digits.indexOf(digit) / base ** (index + 1);
@@ -61,6 +62,7 @@ const fromDecimalToBase = (decimalValue: number, base: number, precision: number
   const integerPart = remainingInteger.toString(base).toUpperCase();
   const fractionalDigits: string[] = [];
 
+  // Multiplicar repetidamente la fraccion por la base produce sus digitos.
   while (remainingFraction > Number.EPSILON && fractionalDigits.length < precision) {
     remainingFraction *= base;
     const digitValue = Math.floor(remainingFraction);
@@ -132,6 +134,7 @@ const convertBetweenBases = ({ value, fromBase, toBase, precision = 16 }: BaseCo
 };
 
 const calculateErrors = ({ actualValue, approximateValue }: ErrorInput) => {
+  // Se aceptan expresiones como pi, sqrt(2) o 22/7 mediante mathjs.
   const actual = evaluateNumericExpression(actualValue);
   const approximate = evaluateNumericExpression(approximateValue);
   const absoluteError = Math.abs(actual - approximate);

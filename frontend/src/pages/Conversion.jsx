@@ -10,6 +10,7 @@ export default function Conversion() {
   const [error, setError] = useState('');
   const [result, setResult] = useState(null);
 
+  // El tipo devuelto permite presentar conversiones y errores en el mismo modulo.
   const handleSubmit = async (payload) => {
     try {
       setLoading(true);

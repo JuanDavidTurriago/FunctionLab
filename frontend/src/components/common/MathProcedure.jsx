@@ -3,9 +3,11 @@ import { MathJax } from 'better-react-mathjax';
 
 export default function MathProcedure({ procedure }) {
   const [open, setOpen] = useState(false);
+  // La clave cambia aunque el componente se reutilice para un calculo nuevo.
   const procedureKey = procedure?.formulas?.join('|') ?? '';
 
   useEffect(() => {
+    // Se cierra el procedimiento anterior para no mezclar visualmente dos resultados.
     setOpen(false);
   }, [procedureKey]);
 
@@ -26,6 +28,7 @@ export default function MathProcedure({ procedure }) {
 
       {open && (
         <div className="math-procedure-content">
+          {/* MathJax recibe cada expresion como bloque LaTeX y la vuelve a procesar dinamicamente. */}
           {procedure.formulas.map((formula, index) => (
             <div className="math-step" key={`${index}-${formula.slice(0, 24)}`}>
               <span className="math-step-number">{String(index + 1).padStart(2, '0')}</span>

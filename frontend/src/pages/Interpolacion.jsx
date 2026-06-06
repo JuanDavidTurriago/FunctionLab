@@ -12,11 +12,13 @@ export default function Interpolacion() {
   const [result, setResult] = useState(null);
   const [method, setMethod] = useState('lagrange');
 
+  // El mismo formulario selecciona el endpoint de Lagrange o diferencias divididas.
   const handleSubmit = async (selectedMethod, payload) => {
     try {
       setLoading(true);
       setError('');
       setMethod(selectedMethod);
+      // Ambos endpoints conservan el mismo contrato de respuesta para reutilizar la vista.
       const request =
         selectedMethod === 'lagrange'
           ? numericalMethodsApi.lagrange(payload)

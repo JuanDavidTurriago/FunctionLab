@@ -5,6 +5,8 @@ export interface ChartPoint {
 
 const round = (value: number, decimals = 10) => Number(value.toFixed(decimals));
 
+// Convierte una funcion continua en una coleccion de puntos que Chart.js
+// puede dibujar. Los valores no finitos se omiten para no romper la grafica.
 export const sampleFunction = (
   evaluate: (x: number) => number,
   start: number,
@@ -27,6 +29,7 @@ export const sampleFunction = (
   return points;
 };
 
+// Agrega espacio visual a ambos lados de los valores importantes del problema.
 export const getPaddedDomain = (values: number[], minimumPadding = 1) => {
   const finiteValues = values.filter(Number.isFinite);
   const minimum = Math.min(...finiteValues);

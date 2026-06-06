@@ -2,6 +2,7 @@ import { Line } from 'react-chartjs-2';
 import { cartesianOptions } from './chartConfig';
 
 export default function TaylorComparisonChart({ chart }) {
+  // Se superponen funcion, polinomio y puntos de referencia en los mismos ejes.
   const data = {
     datasets: [
       {

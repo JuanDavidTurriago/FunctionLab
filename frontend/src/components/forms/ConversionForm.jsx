@@ -20,6 +20,7 @@ export default function ConversionForm({ loading, onSubmit }) {
   const handleSubmit = (event) => {
     event.preventDefault();
 
+    // Cada modo genera un payload distinto para el mismo endpoint.
     if (form.mode === 'error') {
       onSubmit({
         mode: 'error',

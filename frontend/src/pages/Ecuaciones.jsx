@@ -32,12 +32,14 @@ export default function Ecuaciones() {
   const [bisectionResult, setBisectionResult] = useState(null);
   const [newtonResult, setNewtonResult] = useState(null);
 
+  // Ambos metodos comparten manejo de carga y errores, pero mantienen resultados independientes.
   const runRequest = async (method, request) => {
     try {
       setLoading(method);
       setError('');
       const { data } = await request();
 
+      // Se actualiza solo el panel que inicio la peticion.
       if (method === 'bisection') {
         setBisectionResult(data.data);
       } else {

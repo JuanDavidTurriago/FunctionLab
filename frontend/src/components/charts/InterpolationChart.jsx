@@ -2,6 +2,7 @@ import { Line } from 'react-chartjs-2';
 import { cartesianOptions } from './chartConfig';
 
 export default function InterpolationChart({ chart }) {
+  // La curva es continua visualmente; los datos conocidos y evaluados se muestran como puntos.
   const data = {
     datasets: [
       {

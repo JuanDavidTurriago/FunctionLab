@@ -14,6 +14,7 @@ export default function App() {
         <p>Aplicacion fullstack para metodos numericos con frontend React y backend Express.</p>
 
         <nav className="nav-links">
+          {/* El menu se genera desde una sola configuracion para evitar duplicar rutas y etiquetas. */}
           {navItems.map((item) => (
             <NavLink
               key={item.path}
@@ -27,6 +28,7 @@ export default function App() {
       </aside>
 
       <main className="content">
+        {/* React Router decide que modulo matematico se muestra segun la URL. */}
         <Routes>
           <Route path="/" element={<Taylor />} />
           <Route path="/conversion" element={<Conversion />} />

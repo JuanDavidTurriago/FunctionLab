@@ -37,6 +37,8 @@ export const solveSystemNewton = ({
 
   const f1Node = parse(expressions[0]);
   const f2Node = parse(expressions[1]);
+
+  // Estas cuatro derivadas forman el Jacobiano simbolico del sistema 2x2.
   const df1dx = derivative(f1Node, 'x');
   const df1dy = derivative(f1Node, 'y');
   const df2dx = derivative(f2Node, 'x');
@@ -51,6 +53,7 @@ export const solveSystemNewton = ({
     `J(x_k,y_k)\\Delta_k=-F(x_k,y_k),\\qquad \\begin{bmatrix}x_{k+1}\\\\y_{k+1}\\end{bmatrix}=\\begin{bmatrix}x_k\\\\y_k\\end{bmatrix}+\\Delta_k`,
   ];
 
+  // En cada paso se resuelve J(x_k,y_k) * delta = -F(x_k,y_k).
   for (let iteration = 1; iteration <= maxIterations; iteration += 1) {
     const previousX = x;
     const previousY = y;
@@ -68,6 +71,7 @@ export const solveSystemNewton = ({
 
     const determinant = j11 * j22 - j12 * j21;
 
+    // Un Jacobiano singular no tiene inversa y detiene el metodo de Newton.
     if (Math.abs(determinant) < Number.EPSILON) {
       throw new Error('El Jacobiano es singular en la iteracion actual.');
     }
@@ -75,6 +79,7 @@ export const solveSystemNewton = ({
     const deltaX = (-value1 * j22 + j12 * value2) / determinant;
     const deltaY = (value1 * j21 - j11 * value2) / determinant;
 
+    // Las formulas anteriores son la solucion explicita del sistema lineal 2x2.
     x += deltaX;
     y += deltaY;
 

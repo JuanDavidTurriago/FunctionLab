@@ -3,6 +3,8 @@ export const mathNumber = (value: number, decimals = 8) => {
     return String(value);
   }
 
+  // Los negativos se encierran entre parentesis para evitar ambiguedades
+  // cuando se insertan dentro de productos o restas en LaTeX.
   const rounded = Number(value.toFixed(decimals));
   return rounded < 0 ? `(${rounded})` : String(rounded);
 };

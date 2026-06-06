@@ -17,6 +17,7 @@ export const solveBisection = ({
   tolerance = 1e-6,
   maxIterations = 100,
 }: BisectionInput) => {
+  // Biseccion requiere un intervalo ordenado y una tolerancia positiva.
   if (!functionExpression?.trim()) {
     throw new Error('La funcion no puede estar vacia.');
   }
@@ -35,6 +36,7 @@ export const solveBisection = ({
   }
 
   const compiled = parse(functionExpression);
+  // La expresion se compila una sola vez y se reutiliza en todas las iteraciones.
   const evaluate = (x: number) => Number(compiled.evaluate({ x }));
 
   let a = left;
@@ -72,6 +74,7 @@ export const solveBisection = ({
     procedure: { formulas: procedureFormulas },
   });
 
+  // Una raiz exacta en un extremo evita ejecutar iteraciones innecesarias.
   if (fa === 0) {
     procedureFormulas.push(`f(${mathNumber(a)})=0\\Rightarrow p=${mathNumber(a)}`);
     return buildResult(a, iterationRecords);
@@ -86,6 +89,7 @@ export const solveBisection = ({
     throw new Error('El intervalo inicial no contiene un cambio de signo.');
   }
 
+  // Cada iteracion conserva la mitad donde sigue existiendo cambio de signo.
   for (let iteration = 1; iteration <= maxIterations; iteration += 1) {
     const midpoint = (a + b) / 2;
     const fm = evaluate(midpoint);
@@ -106,6 +110,7 @@ export const solveBisection = ({
       return buildResult(midpoint, iterationRecords);
     }
 
+    // El producto negativo identifica la mitad que contiene al menos una raiz.
     if (fa * fm < 0) {
       b = midpoint;
       fb = fm;

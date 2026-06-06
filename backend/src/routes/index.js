@@ -13,6 +13,8 @@ import { convertBaseController } from '../controllers/conversion.controller.js';
 
 const router = Router();
 
+// La capa de rutas solo relaciona una URL con su controlador.
+// La validacion numerica y los calculos permanecen en los servicios.
 router.post('/taylor', calculateTaylor);
 router.post('/biseccion', solveBisectionController);
 router.post('/newton', solveNewtonController);

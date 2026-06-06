@@ -22,6 +22,7 @@ export default function Sistemas() {
   const [error, setError] = useState('');
   const [result, setResult] = useState(null);
 
+  // Envia las funciones y el punto inicial; la API devuelve solucion, pasos e iteraciones.
   const handleSubmit = async (payload) => {
     try {
       setLoading(true);

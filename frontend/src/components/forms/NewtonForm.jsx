@@ -16,6 +16,7 @@ export default function NewtonForm({ loading, onSubmit }) {
 
   const handleSubmit = (event) => {
     event.preventDefault();
+    // La expresion permanece como texto y los parametros iterativos pasan a numeros.
     onSubmit({
       functionExpression: form.functionExpression,
       initialGuess: Number(form.initialGuess),

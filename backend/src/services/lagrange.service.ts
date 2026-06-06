@@ -29,6 +29,7 @@ const validateInterpolationInput = (points: Point[], value: number) => {
 export const interpolateLagrange = ({ points, value }: LagrangeInput) => {
   validateInterpolationInput(points, value);
 
+  // Para cada nodo se construye L_i(x); vale 1 en x_i y 0 en los demas nodos.
   const evaluate = (x: number) => {
     return points.reduce((result, pointI, i) => {
       const basis = points.reduce((product, pointJ, j) => {
@@ -39,6 +40,9 @@ export const interpolateLagrange = ({ points, value }: LagrangeInput) => {
     }, 0);
   };
   const result = evaluate(value);
+
+  // Estas cadenas no intervienen en el resultado: describen el mismo calculo
+  // en LaTeX para el panel de procedimiento.
   const basisFormulas = points.map((pointI, i) => {
     const numerator = points
       .map((pointJ, j) => (i === j ? null : `(x-${pointJ.x})`))

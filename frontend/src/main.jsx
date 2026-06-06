@@ -9,6 +9,8 @@ const mathJaxConfig = {
   loader: { load: ['input/tex', 'output/chtml'] },
 };
 
+// Los proveedores globales habilitan formulas matematicas y navegacion
+// sin recargar la pagina para todos los componentes de la aplicacion.
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <MathJaxContext config={mathJaxConfig}>

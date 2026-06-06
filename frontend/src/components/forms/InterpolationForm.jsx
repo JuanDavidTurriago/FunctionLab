@@ -16,6 +16,7 @@ export default function InterpolationForm({ loading, onSubmit }) {
 
   const handleSubmit = (event) => {
     event.preventDefault();
+    // Cada linea "x,y" se transforma en un punto antes de enviarla al backend.
     onSubmit(form.method, {
       points: parsePoints(form.pointsText),
       value: Number(form.value),
