@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "tsx watch src/app.js",
     "build": "tsc",
+    "test": "tsx --test tests/numerical-methods.test.ts",
     "start": "tsx src/app.js"
   },
   "dependencies": {

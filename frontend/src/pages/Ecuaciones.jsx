@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import DataTable from '../components/common/DataTable';
+import MathProcedure from '../components/common/MathProcedure';
 import PageLayout from '../components/common/PageLayout';
 import ResultSummary from '../components/common/ResultSummary';
+import RootIterationChart from '../components/charts/RootIterationChart';
 import BisectionForm from '../components/forms/BisectionForm';
 import NewtonForm from '../components/forms/NewtonForm';
 import { numericalMethodsApi } from '../services/api';
@@ -65,6 +67,9 @@ export default function Ecuaciones() {
           {bisectionResult && (
             <>
               <ResultSummary items={[{ label: 'Raiz aproximada', value: bisectionResult.root }]} />
+              <MathProcedure procedure={bisectionResult.procedure} />
+              <h4>Construccion grafica</h4>
+              <RootIterationChart method="bisection" result={bisectionResult} />
               <DataTable columns={bisectionColumns} rows={bisectionResult.iterations} />
             </>
           )}
@@ -79,6 +84,9 @@ export default function Ecuaciones() {
           {newtonResult && (
             <>
               <ResultSummary items={[{ label: 'Raiz aproximada', value: newtonResult.root }]} />
+              <MathProcedure procedure={newtonResult.procedure} />
+              <h4>Construccion grafica</h4>
+              <RootIterationChart method="newton" result={newtonResult} />
               <DataTable columns={newtonColumns} rows={newtonResult.iterations} />
             </>
           )}

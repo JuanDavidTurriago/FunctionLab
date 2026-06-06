@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import PageLayout from '../components/common/PageLayout';
+import MathProcedure from '../components/common/MathProcedure';
 import ResultSummary from '../components/common/ResultSummary';
 import ConversionForm from '../components/forms/ConversionForm';
 import { numericalMethodsApi } from '../services/api';
@@ -38,25 +39,28 @@ export default function Conversion() {
         <section className="panel">
           <h3>Resultado</h3>
           {result ? (
-            result.type === 'error' ? (
-              <ResultSummary
-                items={[
-                  { label: 'Valor real', value: result.actualValue },
-                  { label: 'Aproximacion', value: result.approximateValue },
-                  { label: 'Error absoluto', value: result.absoluteError },
-                  { label: 'Error relativo', value: result.relativeError },
-                  { label: 'Error porcentual', value: `${Number(result.percentageError.toFixed(8))}%` },
-                ]}
-              />
-            ) : (
-              <ResultSummary
-                items={[
-                  { label: 'Original', value: `${result.originalValue} (base ${result.fromBase})` },
-                  { label: 'Decimal', value: result.decimalValue },
-                  { label: 'Convertido', value: `${result.convertedValue} (base ${result.toBase})` },
-                ]}
-              />
-            )
+            <>
+              {result.type === 'error' ? (
+                <ResultSummary
+                  items={[
+                    { label: 'Valor real', value: result.actualValue },
+                    { label: 'Aproximacion', value: result.approximateValue },
+                    { label: 'Error absoluto', value: result.absoluteError },
+                    { label: 'Error relativo', value: result.relativeError },
+                    { label: 'Error porcentual', value: `${Number(result.percentageError.toFixed(8))}%` },
+                  ]}
+                />
+              ) : (
+                <ResultSummary
+                  items={[
+                    { label: 'Original', value: `${result.originalValue} (base ${result.fromBase})` },
+                    { label: 'Decimal', value: result.decimalValue },
+                    { label: 'Convertido', value: `${result.convertedValue} (base ${result.toBase})` },
+                  ]}
+                />
+              )}
+              <MathProcedure procedure={result.procedure} />
+            </>
           ) : (
             <p className="muted">Ejecuta una conversion o calcula errores para ver el resultado.</p>
           )}

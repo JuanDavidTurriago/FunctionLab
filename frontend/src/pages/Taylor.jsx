@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import { MathJax } from 'better-react-mathjax';
 import PageLayout from '../components/common/PageLayout';
+import MathProcedure from '../components/common/MathProcedure';
 import TaylorForm from '../components/forms/TaylorForm';
 import LineChart from '../components/charts/LineChart';
+import TaylorComparisonChart from '../components/charts/TaylorComparisonChart';
 import { numericalMethodsApi } from '../services/api';
 
 export default function Taylor() {
@@ -42,7 +44,9 @@ export default function Taylor() {
               <p>
                 <strong>Polinomio:</strong>
               </p>
-              <MathJax>{`\\(${result.polynomialLatex}\\)`}</MathJax>
+              <MathJax key={result.polynomialLatex} dynamic>
+                {`\\(${result.polynomialLatex}\\)`}
+              </MathJax>
               <div className="result-block">
                 Aproximacion: {result.approximation}
                 {'\n'}
@@ -50,6 +54,7 @@ export default function Taylor() {
                 {'\n'}
                 Error absoluto: {result.absoluteError}
               </div>
+              <MathProcedure procedure={result.procedure} />
             </>
           ) : (
             <p className="muted">Envia el formulario para ver la aproximacion y el polinomio generado.</p>
@@ -58,14 +63,33 @@ export default function Taylor() {
       </div>
 
       {result?.chart && (
-        <div className="panel" style={{ marginTop: '1.5rem' }}>
-          <h3>Convergencia por termino</h3>
-          <LineChart
-            labels={result.chart.labels}
-            values={result.chart.values}
-            label="Aproximacion parcial"
-          />
-        </div>
+        <>
+          <section className="visualization-section">
+            <div className="visualization-heading">
+              <div>
+                <h3>Funcion y polinomio</h3>
+                <p>Comparacion de la funcion original con su aproximacion de Taylor.</p>
+              </div>
+            </div>
+            <TaylorComparisonChart chart={result.chart} />
+          </section>
+
+          <section className="visualization-section">
+            <div className="visualization-heading">
+              <div>
+                <h3>Convergencia por termino</h3>
+                <p>Valor acumulado al agregar cada termino del polinomio.</p>
+              </div>
+            </div>
+            <div className="chart-frame chart-frame-small">
+              <LineChart
+                labels={result.chart.labels}
+                values={result.chart.values}
+                label="Aproximacion parcial"
+              />
+            </div>
+          </section>
+        </>
       )}
     </PageLayout>
   );

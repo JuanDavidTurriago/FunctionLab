@@ -1,15 +1,5 @@
-import {
-  CategoryScale,
-  Chart as ChartJS,
-  Legend,
-  LineElement,
-  LinearScale,
-  PointElement,
-  Tooltip,
-} from 'chart.js';
 import { Line } from 'react-chartjs-2';
-
-ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Tooltip, Legend);
+import './chartConfig';
 
 export default function LineChart({ labels = [], values = [], label = 'Serie' }) {
   const data = {

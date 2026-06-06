@@ -1,4 +1,5 @@
 import { derivative, parse } from 'mathjs';
+import { mathNumber, mathTuple } from './procedure.utils.js';
 
 interface SystemNewtonInput {
   functionExpressions?: [string, string];
@@ -44,8 +45,15 @@ export const solveSystemNewton = ({
   let x = x0;
   let y = y0;
   const iterations = [];
+  const procedureFormulas: string[] = [
+    `F(x,y)=\\begin{bmatrix}${f1Node.toTex()}\\\\${f2Node.toTex()}\\end{bmatrix}`,
+    `J(x,y)=\\begin{bmatrix}${df1dx.toTex()}&${df1dy.toTex()}\\\\${df2dx.toTex()}&${df2dy.toTex()}\\end{bmatrix}`,
+    `J(x_k,y_k)\\Delta_k=-F(x_k,y_k),\\qquad \\begin{bmatrix}x_{k+1}\\\\y_{k+1}\\end{bmatrix}=\\begin{bmatrix}x_k\\\\y_k\\end{bmatrix}+\\Delta_k`,
+  ];
 
   for (let iteration = 1; iteration <= maxIterations; iteration += 1) {
+    const previousX = x;
+    const previousY = y;
     const scope = { x, y };
     const value1 = Number(f1Node.evaluate(scope));
     const value2 = Number(f2Node.evaluate(scope));
@@ -72,11 +80,14 @@ export const solveSystemNewton = ({
 
     const error = Math.max(Math.abs(deltaX), Math.abs(deltaY));
     iterations.push({ iteration, x, y, f1: value1, f2: value2, deltaX, deltaY, error });
+    procedureFormulas.push(
+      `\\begin{aligned}J_${iteration - 1}&=\\begin{bmatrix}${mathNumber(j11)}&${mathNumber(j12)}\\\\${mathNumber(j21)}&${mathNumber(j22)}\\end{bmatrix},\\quad F_${iteration - 1}=\\begin{bmatrix}${mathNumber(value1)}\\\\${mathNumber(value2)}\\end{bmatrix}\\\\\\Delta_${iteration - 1}&=\\begin{bmatrix}${mathNumber(deltaX)}\\\\${mathNumber(deltaY)}\\end{bmatrix}\\\\(x_${iteration},y_${iteration})&=(${mathTuple([previousX, previousY])})+(${mathTuple([deltaX, deltaY])})=(${mathTuple([x, y])})\\\\e_${iteration}&=${mathNumber(error)}\\end{aligned}`,
+    );
 
     if (error < tolerance) {
-      return { solution: { x, y }, expressions, iterations };
+      return { solution: { x, y }, expressions, iterations, procedure: { formulas: procedureFormulas } };
     }
   }
 
-  return { solution: { x, y }, expressions, iterations };
+  return { solution: { x, y }, expressions, iterations, procedure: { formulas: procedureFormulas } };
 };

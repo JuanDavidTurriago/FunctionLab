@@ -1,4 +1,6 @@
 import { derivative, parse } from 'mathjs';
+import { getPaddedDomain, sampleFunction } from './chart.utils.js';
+import { mathNumber } from './procedure.utils.js';
 
 interface NewtonInput {
   functionExpression: string;
@@ -26,6 +28,10 @@ export const solveNewton = ({
 
   let current = initialGuess;
   const iterations = [];
+  const procedureFormulas: string[] = [
+    `f(x)=${fx.toTex()},\\qquad f'(x)=${dfx.toTex()}`,
+    `x_{k+1}=x_k-\\frac{f(x_k)}{f'(x_k)}`,
+  ];
 
   for (let iteration = 1; iteration <= maxIterations; iteration += 1) {
     const value = Number(fx.evaluate({ x: current }));
@@ -43,13 +49,40 @@ export const solveNewton = ({
     const error = Math.abs(next - current);
 
     iterations.push({ iteration, x: current, fx: value, dfx: slope, next, error });
+    procedureFormulas.push(
+      `\\begin{aligned}x_${iteration}&=${mathNumber(current)}-\\frac{${mathNumber(value)}}{${mathNumber(slope)}}=${mathNumber(next)}\\\\e_${iteration}&=|${mathNumber(next)}-${mathNumber(current)}|=${mathNumber(error)}\\end{aligned}`,
+    );
 
     if (error < tolerance) {
-      return { root: next, iterations };
+      const domain = getPaddedDomain(
+        [initialGuess, next, ...iterations.flatMap((item) => [item.x, item.next])],
+        1,
+      );
+
+      return {
+        root: next,
+        iterations,
+        chart: {
+          functionPoints: sampleFunction((x) => Number(fx.evaluate({ x })), domain.start, domain.end),
+        },
+        procedure: { formulas: procedureFormulas },
+      };
     }
 
     current = next;
   }
 
-  return { root: current, iterations };
+  const domain = getPaddedDomain(
+    [initialGuess, current, ...iterations.flatMap((item) => [item.x, item.next])],
+    1,
+  );
+
+  return {
+    root: current,
+    iterations,
+    chart: {
+      functionPoints: sampleFunction((x) => Number(fx.evaluate({ x })), domain.start, domain.end),
+    },
+    procedure: { formulas: procedureFormulas },
+  };
 };

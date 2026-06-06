@@ -1,4 +1,5 @@
 import { parse } from 'mathjs';
+import { mathNumber } from './procedure.utils.js';
 
 interface BaseConversionInput {
   mode?: 'base';
@@ -74,6 +75,21 @@ const fromDecimalToBase = (decimalValue: number, base: number, precision: number
   return `${sign}${integerPart}${fractionalDigits.length ? `.${fractionalDigits.join('')}` : ''}`;
 };
 
+const buildPositionalFormula = (value: string, base: number) => {
+  const unsignedValue = value.replace(/^-/, '');
+  const [integerPart = '0', fractionalPart = ''] = unsignedValue.split('.');
+  const integerTerms = [...integerPart].map((digit, index) => {
+    const exponent = integerPart.length - index - 1;
+    return `${digits.indexOf(digit)}\\cdot${base}^{${exponent}}`;
+  });
+  const fractionalTerms = [...fractionalPart].map((digit, index) => {
+    return `${digits.indexOf(digit)}\\cdot${base}^{-${index + 1}}`;
+  });
+  const sign = value.startsWith('-') ? '-' : '';
+
+  return `${sign}\\left(${[...integerTerms, ...fractionalTerms].join('+')}\\right)`;
+};
+
 const convertBetweenBases = ({ value, fromBase, toBase, precision = 16 }: BaseConversionInput) => {
   const normalizedValue = String(value ?? '').trim().replace(',', '.').toUpperCase();
 
@@ -96,6 +112,7 @@ const convertBetweenBases = ({ value, fromBase, toBase, precision = 16 }: BaseCo
   }
 
   const decimalValue = fromBaseToDecimal(normalizedValue, fromBase);
+  const convertedValue = fromDecimalToBase(decimalValue, toBase, precision);
 
   return {
     type: 'base',
@@ -103,8 +120,14 @@ const convertBetweenBases = ({ value, fromBase, toBase, precision = 16 }: BaseCo
     fromBase,
     toBase,
     decimalValue,
-    convertedValue: fromDecimalToBase(decimalValue, toBase, precision),
+    convertedValue,
     precision,
+    procedure: {
+      formulas: [
+        `(${normalizedValue})_{${fromBase}}=${buildPositionalFormula(normalizedValue, fromBase)}=${mathNumber(decimalValue)}`,
+        `(${mathNumber(decimalValue)})_{10}=(${convertedValue})_{${toBase}}`,
+      ],
+    },
   };
 };
 
@@ -124,6 +147,13 @@ const calculateErrors = ({ actualValue, approximateValue }: ErrorInput) => {
     absoluteError,
     relativeError: absoluteError / Math.abs(actual),
     percentageError: (absoluteError / Math.abs(actual)) * 100,
+    procedure: {
+      formulas: [
+        `E_a=|p-p^*|=|${mathNumber(actual)}-${mathNumber(approximate)}|=${mathNumber(absoluteError)}`,
+        `E_r=\\frac{E_a}{|p|}=\\frac{${mathNumber(absoluteError)}}{|${mathNumber(actual)}|}=${mathNumber(absoluteError / Math.abs(actual))}`,
+        `E_{\\%}=100E_r=${mathNumber((absoluteError / Math.abs(actual)) * 100)}\\%`,
+      ],
+    },
   };
 };
 

@@ -104,6 +104,10 @@ textarea {
   margin-top: 0;
 }
 
+.panel h4 {
+  margin: 1.5rem 0 0.75rem;
+}
+
 .form-grid {
   display: grid;
   gap: 1rem;
@@ -135,6 +139,21 @@ textarea {
 .btn-primary:disabled {
   cursor: not-allowed;
   opacity: 0.72;
+}
+
+.btn-secondary {
+  min-height: 40px;
+  border: 1px solid #0f766e;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #0f766e;
+  padding: 0.65rem 1rem;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.btn-secondary:hover {
+  background: #ecfdf5;
 }
 
 .inline-fields {
@@ -232,6 +251,139 @@ textarea {
   color: #52677f;
 }
 
+.math-procedure {
+  margin-top: 1.25rem;
+}
+
+.math-procedure-content {
+  display: grid;
+  gap: 0;
+  margin-top: 1rem;
+  border: 1px solid #d8e3ee;
+  border-radius: 8px;
+  background: #fbfdff;
+  max-height: 560px;
+  overflow: auto;
+}
+
+.math-step {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr);
+  border-bottom: 1px solid #e5edf5;
+}
+
+.math-step:last-child {
+  border-bottom: 0;
+}
+
+.math-step-number {
+  display: grid;
+  place-items: start center;
+  padding-top: 1rem;
+  color: #64748b;
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+  border-right: 1px solid #e5edf5;
+}
+
+.math-formula {
+  min-width: 0;
+  overflow-x: auto;
+  padding: 0.75rem 1rem;
+}
+
+.math-formula mjx-container {
+  margin: 0.35rem 0 !important;
+  text-align: left !important;
+}
+
+.visualization-section {
+  margin-top: 1.5rem;
+  border-top: 1px solid #d8e3ee;
+  padding-top: 1.5rem;
+}
+
+.visualization-heading {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.visualization-heading h3,
+.visualization-heading p {
+  margin: 0;
+}
+
+.visualization-heading p {
+  color: #52677f;
+  margin-top: 0.25rem;
+}
+
+.chart-frame {
+  position: relative;
+  width: 100%;
+  height: 420px;
+  min-height: 320px;
+  border: 1px solid #deebf7;
+  border-radius: 8px;
+  background: #ffffff;
+  padding: 1rem;
+}
+
+.chart-frame-small {
+  height: 300px;
+}
+
+.iteration-visualizer {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.chart-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.icon-button,
+.play-button {
+  min-height: 36px;
+  border: 1px solid #b9cadc;
+  border-radius: 6px;
+  background: #ffffff;
+  color: #132238;
+  cursor: pointer;
+}
+
+.icon-button {
+  width: 36px;
+  padding: 0;
+  font-weight: 800;
+}
+
+.play-button {
+  padding: 0.4rem 0.85rem;
+}
+
+.icon-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.iteration-counter {
+  color: #52677f;
+  font-size: 0.9rem;
+  margin-left: auto;
+}
+
+.iteration-slider {
+  width: 100%;
+  accent-color: #0f766e;
+}
+
 @media (max-width: 960px) {
   .app-shell {
     grid-template-columns: 1fr;
@@ -243,5 +395,10 @@ textarea {
 
   .inline-fields {
     grid-template-columns: 1fr;
+  }
+
+  .chart-frame {
+    height: 340px;
+    padding: 0.5rem;
   }
 }

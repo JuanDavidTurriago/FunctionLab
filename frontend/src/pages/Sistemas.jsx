@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import DataTable from '../components/common/DataTable';
+import MathProcedure from '../components/common/MathProcedure';
 import PageLayout from '../components/common/PageLayout';
 import ResultSummary from '../components/common/ResultSummary';
 import SystemNewtonForm from '../components/forms/SystemNewtonForm';
@@ -58,6 +59,7 @@ export default function Sistemas() {
                   { label: 'Iteraciones', value: result.iterations.length },
                 ]}
               />
+              <MathProcedure procedure={result.procedure} />
               <DataTable columns={systemColumns} rows={result.iterations} />
             </>
           ) : (
