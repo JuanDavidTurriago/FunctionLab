@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { MathJax } from 'better-react-mathjax';
+import MathFormula from './MathFormula';
 
 export default function MathProcedure({ procedure }) {
   const [open, setOpen] = useState(false);
@@ -33,9 +33,7 @@ export default function MathProcedure({ procedure }) {
             <div className="math-step" key={`${index}-${formula.slice(0, 24)}`}>
               <span className="math-step-number">{String(index + 1).padStart(2, '0')}</span>
               <div className="math-formula">
-                <MathJax key={formula} dynamic>
-                  {`\\[${formula}\\]`}
-                </MathJax>
+                <MathFormula latex={formula} display />
               </div>
             </div>
           ))}

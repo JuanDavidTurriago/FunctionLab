@@ -7,6 +7,13 @@ import './styles.css';
 
 const mathJaxConfig = {
   loader: { load: ['input/tex', 'output/chtml'] },
+  chtml: {
+    scale: 1,
+    mtextInheritFont: true,
+  },
+  options: {
+    enableMenu: false,
+  },
 };
 
 // Los proveedores globales habilitan formulas matematicas y navegacion

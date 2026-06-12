@@ -1,15 +1,18 @@
 import { Line } from 'react-chartjs-2';
-import { cartesianOptions } from './chartConfig';
+import { useTheme } from '../common/ThemeContext';
+import { createCartesianOptions, getChartColors } from './chartConfig';
 
 export default function InterpolationChart({ chart }) {
+  const { theme } = useTheme();
+  const colors = getChartColors(theme);
   // La curva es continua visualmente; los datos conocidos y evaluados se muestran como puntos.
   const data = {
     datasets: [
       {
         label: 'Polinomio interpolante',
         data: chart.curvePoints,
-        borderColor: '#0f766e',
-        backgroundColor: '#0f766e',
+        borderColor: colors.primary,
+        backgroundColor: colors.primary,
         borderWidth: 2.5,
         pointRadius: 0,
         tension: 0.08,
@@ -17,8 +20,8 @@ export default function InterpolationChart({ chart }) {
       {
         label: 'Puntos conocidos',
         data: chart.inputPoints,
-        borderColor: '#1d4ed8',
-        backgroundColor: '#1d4ed8',
+        borderColor: colors.blue,
+        backgroundColor: colors.blue,
         pointRadius: 6,
         pointHoverRadius: 8,
         showLine: false,
@@ -26,8 +29,8 @@ export default function InterpolationChart({ chart }) {
       {
         label: 'Punto interpolado',
         data: [chart.evaluationPoint],
-        borderColor: '#b91c1c',
-        backgroundColor: '#b91c1c',
+        borderColor: colors.danger,
+        backgroundColor: colors.danger,
         pointStyle: 'rectRot',
         pointRadius: 7,
         showLine: false,
@@ -37,7 +40,7 @@ export default function InterpolationChart({ chart }) {
 
   return (
     <div className="chart-frame">
-      <Line data={data} options={cartesianOptions} />
+      <Line key={theme} data={data} options={createCartesianOptions(theme)} />
     </div>
   );
 }

@@ -1,3 +1,5 @@
+import MathFormula from './MathFormula';
+
 const formatValue = (value) => {
   if (typeof value === 'number') {
     // Se limita el ruido decimal sin alterar enteros ni los datos originales.
@@ -18,7 +20,9 @@ export default function DataTable({ columns, rows = [] }) {
         <thead>
           <tr>
             {columns.map((column) => (
-              <th key={column.key}>{column.label}</th>
+              <th key={column.key}>
+                {column.latex ? <MathFormula latex={column.latex} /> : column.label}
+              </th>
             ))}
           </tr>
         </thead>

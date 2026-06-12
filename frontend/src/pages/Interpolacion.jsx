@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import PageLayout from '../components/common/PageLayout';
 import MathProcedure from '../components/common/MathProcedure';
+import MathResult from '../components/common/MathResult';
 import ResultSummary from '../components/common/ResultSummary';
 import InterpolationForm from '../components/forms/InterpolationForm';
 import InterpolationChart from '../components/charts/InterpolationChart';
 import { numericalMethodsApi } from '../services/api';
+import { toLatexNumber } from '../utils/mathFormat';
 
 export default function Interpolacion() {
   const [loading, setLoading] = useState(false);
@@ -52,14 +54,20 @@ export default function Interpolacion() {
               <ResultSummary
                 items={[
                   { label: 'Metodo', value: method === 'lagrange' ? 'Lagrange' : 'Newton' },
-                  { label: 'x evaluado', value: result.value },
-                  { label: 'Valor interpolado', value: result.interpolatedValue },
+                  { label: 'Punto evaluado', latex: `x=${toLatexNumber(result.value)}` },
+                  {
+                    label: 'Valor interpolado',
+                    latex: `P(x)=${toLatexNumber(result.interpolatedValue)}`,
+                  },
                 ]}
               />
               {result.coefficients && (
-                <div className="result-block">
-                  Coeficientes: {result.coefficients.map((coefficient) => Number(coefficient.toFixed(8))).join(', ')}
-                </div>
+                <MathResult
+                  formulas={[
+                    `\\left(a_0,\\ldots,a_${result.coefficients.length - 1}\\right)=\\left(${result.coefficients.map((coefficient) => toLatexNumber(coefficient)).join(',\\;')}\\right)`,
+                  ]}
+                  ariaLabel="Coeficientes del polinomio interpolante"
+                />
               )}
               <MathProcedure procedure={result.procedure} />
             </>

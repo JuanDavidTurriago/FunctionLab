@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
 import { Line } from 'react-chartjs-2';
-import { cartesianOptions } from './chartConfig';
+import { useTheme } from '../common/ThemeContext';
+import { createCartesianOptions, getChartColors } from './chartConfig';
 
 // Solo se incluyen las iteraciones alcanzadas por el reproductor.
-const buildBisectionDatasets = (iterations, step) => {
+const buildBisectionDatasets = (iterations, step, colors) => {
   const visibleIterations = iterations.slice(0, step);
   const current = visibleIterations.at(-1);
 
@@ -15,8 +16,8 @@ const buildBisectionDatasets = (iterations, step) => {
     {
       label: 'Puntos medios',
       data: visibleIterations.map((item) => ({ x: item.midpoint, y: item.value })),
-      borderColor: '#d97706',
-      backgroundColor: '#d97706',
+      borderColor: colors.secondary,
+      backgroundColor: colors.secondary,
       pointRadius: 5,
       borderWidth: 1.5,
       showLine: true,
@@ -27,8 +28,8 @@ const buildBisectionDatasets = (iterations, step) => {
         { x: current.a, y: 0 },
         { x: current.a, y: current.fa },
       ],
-      borderColor: '#7c3aed',
-      backgroundColor: '#7c3aed',
+      borderColor: colors.violet,
+      backgroundColor: colors.violet,
       borderDash: [6, 4],
       pointRadius: 3,
       showLine: true,
@@ -39,8 +40,8 @@ const buildBisectionDatasets = (iterations, step) => {
         { x: current.b, y: 0 },
         { x: current.b, y: current.fb },
       ],
-      borderColor: '#7c3aed',
-      backgroundColor: '#7c3aed',
+      borderColor: colors.violet,
+      backgroundColor: colors.violet,
       borderDash: [6, 4],
       pointRadius: 3,
       showLine: true,
@@ -48,7 +49,7 @@ const buildBisectionDatasets = (iterations, step) => {
   ];
 };
 
-const buildNewtonDatasets = (iterations, step) => {
+const buildNewtonDatasets = (iterations, step, colors) => {
   const visibleIterations = iterations.slice(0, step);
   const current = visibleIterations.at(-1);
 
@@ -60,16 +61,16 @@ const buildNewtonDatasets = (iterations, step) => {
     {
       label: 'Aproximaciones sobre f(x)',
       data: visibleIterations.map((item) => ({ x: item.x, y: item.fx })),
-      borderColor: '#d97706',
-      backgroundColor: '#d97706',
+      borderColor: colors.secondary,
+      backgroundColor: colors.secondary,
       pointRadius: 5,
       showLine: false,
     },
     {
       label: 'Aproximaciones en el eje x',
       data: visibleIterations.map((item) => ({ x: item.next, y: 0 })),
-      borderColor: '#1d4ed8',
-      backgroundColor: '#1d4ed8',
+      borderColor: colors.blue,
+      backgroundColor: colors.blue,
       pointStyle: 'rectRot',
       pointRadius: 5,
       showLine: false,
@@ -81,8 +82,8 @@ const buildNewtonDatasets = (iterations, step) => {
         { x: current.x, y: current.fx },
         { x: current.next, y: 0 },
       ],
-      borderColor: '#7c3aed',
-      backgroundColor: '#7c3aed',
+      borderColor: colors.violet,
+      backgroundColor: colors.violet,
       borderDash: [6, 4],
       borderWidth: 2,
       pointRadius: 3,
@@ -92,6 +93,8 @@ const buildNewtonDatasets = (iterations, step) => {
 };
 
 export default function RootIterationChart({ method, result }) {
+  const { theme } = useTheme();
+  const colors = getChartColors(theme);
   const [step, setStep] = useState(1);
   const [playing, setPlaying] = useState(false);
   const total = result.iterations.length;
@@ -129,8 +132,8 @@ export default function RootIterationChart({ method, result }) {
         {
           label: 'f(x)',
           data: result.chart.functionPoints,
-          borderColor: '#0f766e',
-          backgroundColor: '#0f766e',
+          borderColor: colors.primary,
+          backgroundColor: colors.primary,
           borderWidth: 2.5,
           pointRadius: 0,
           tension: 0.08,
@@ -138,8 +141,8 @@ export default function RootIterationChart({ method, result }) {
         {
           label: 'Raiz exacta en el extremo',
           data: [{ x: result.root, y: 0 }],
-          borderColor: '#b91c1c',
-          backgroundColor: '#b91c1c',
+          borderColor: colors.danger,
+          backgroundColor: colors.danger,
           pointRadius: 6,
           showLine: false,
         },
@@ -148,15 +151,15 @@ export default function RootIterationChart({ method, result }) {
 
     return (
       <div className="chart-frame">
-        <Line data={data} options={cartesianOptions} />
+        <Line key={theme} data={data} options={createCartesianOptions(theme)} />
       </div>
     );
   }
 
   const methodDatasets =
     method === 'bisection'
-      ? buildBisectionDatasets(result.iterations, step)
-      : buildNewtonDatasets(result.iterations, step);
+      ? buildBisectionDatasets(result.iterations, step, colors)
+      : buildNewtonDatasets(result.iterations, step, colors);
 
   const data = {
     // La curva base permanece fija y se superponen los elementos del metodo.
@@ -164,8 +167,8 @@ export default function RootIterationChart({ method, result }) {
       {
         label: 'f(x)',
         data: result.chart.functionPoints,
-        borderColor: '#0f766e',
-        backgroundColor: '#0f766e',
+        borderColor: colors.primary,
+        backgroundColor: colors.primary,
         borderWidth: 2.5,
         pointRadius: 0,
         tension: 0.08,
@@ -174,8 +177,8 @@ export default function RootIterationChart({ method, result }) {
       {
         label: 'Raiz aproximada',
         data: [{ x: result.root, y: 0 }],
-        borderColor: '#b91c1c',
-        backgroundColor: '#b91c1c',
+        borderColor: colors.danger,
+        backgroundColor: colors.danger,
         pointRadius: 6,
         showLine: false,
       },
@@ -229,7 +232,7 @@ export default function RootIterationChart({ method, result }) {
         aria-label="Seleccionar iteracion"
       />
       <div className="chart-frame">
-        <Line data={data} options={cartesianOptions} />
+        <Line key={theme} data={data} options={createCartesianOptions(theme)} />
       </div>
     </div>
   );

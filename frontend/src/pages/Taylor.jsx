@@ -1,11 +1,12 @@
 import { useState } from 'react';
-import { MathJax } from 'better-react-mathjax';
 import PageLayout from '../components/common/PageLayout';
+import MathResult from '../components/common/MathResult';
 import MathProcedure from '../components/common/MathProcedure';
 import TaylorForm from '../components/forms/TaylorForm';
 import LineChart from '../components/charts/LineChart';
 import TaylorComparisonChart from '../components/charts/TaylorComparisonChart';
 import { numericalMethodsApi } from '../services/api';
+import { toLatexNumber } from '../utils/mathFormat';
 
 export default function Taylor() {
   const [loading, setLoading] = useState(false);
@@ -42,19 +43,13 @@ export default function Taylor() {
           {result ? (
             <>
               <h3>Resultado</h3>
-              <p>
-                <strong>Polinomio:</strong>
-              </p>
-              <MathJax key={result.polynomialLatex} dynamic>
-                {`\\(${result.polynomialLatex}\\)`}
-              </MathJax>
-              <div className="result-block">
-                Aproximacion: {result.approximation}
-                {'\n'}
-                Valor esperado: {result.expectedValue}
-                {'\n'}
-                Error absoluto: {result.absoluteError}
-              </div>
+              <MathResult
+                formulas={[
+                  `P_{${result.input.order}}(x)=${result.polynomialLatex}`,
+                  `P_{${result.input.order}}(${toLatexNumber(result.input.value)})=${toLatexNumber(result.approximation)},\\quad f(${toLatexNumber(result.input.value)})=${toLatexNumber(result.expectedValue)},\\quad \\lvert E\\rvert=${toLatexNumber(result.absoluteError)}`,
+                ]}
+                ariaLabel="Polinomio y evaluacion de Taylor"
+              />
               <MathProcedure procedure={result.procedure} />
             </>
           ) : (

@@ -205,6 +205,28 @@ test('Newton for nonlinear systems: Jacobian updates solve J*delta=-F', () => {
   closeTo(result.solution.x ** 2 + result.solution.y ** 2 - 4, 0, 1e-9, 'System f1');
   closeTo(result.solution.x - result.solution.y - 1, 0, 1e-9, 'System f2');
   assertProcedure(result.procedure, result.iterations.length + 3);
+  assert.deepEqual(result.chart.initialPoint, { x: 1.8, y: 0.8 });
+  closeTo(result.chart.iterationPoints.at(-1)!.x, result.solution.x, 1e-12, 'Chart final x');
+  closeTo(result.chart.iterationPoints.at(-1)!.y, result.solution.y, 1e-12, 'Chart final y');
+
+  for (const segment of result.chart.firstContour) {
+    for (const point of segment) {
+      closeTo(point.x ** 2 + point.y ** 2 - 4, 0, 0.01, 'Circle contour');
+    }
+  }
+
+  for (const segment of result.chart.secondContour) {
+    for (const point of segment) {
+      closeTo(point.x - point.y - 1, 0, 1e-7, 'Line contour');
+    }
+  }
+
+  assert.equal(result.chart.intersections.length, 2);
+  const sortedIntersections = [...result.chart.intersections].sort((first, second) => first.x - second.x);
+  closeTo(sortedIntersections[0].x, (1 - Math.sqrt(7)) / 2, 1e-6, 'Left intersection x');
+  closeTo(sortedIntersections[0].y, (-1 - Math.sqrt(7)) / 2, 1e-6, 'Left intersection y');
+  closeTo(sortedIntersections[1].x, expectedX, 1e-6, 'Right intersection x');
+  closeTo(sortedIntersections[1].y, expectedY, 1e-6, 'Right intersection y');
 
   let x = 1.8;
   let y = 0.8;

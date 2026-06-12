@@ -4,6 +4,7 @@ import MathProcedure from '../components/common/MathProcedure';
 import ResultSummary from '../components/common/ResultSummary';
 import ConversionForm from '../components/forms/ConversionForm';
 import { numericalMethodsApi } from '../services/api';
+import { toLatexBaseValue, toLatexNumber } from '../utils/mathFormat';
 
 export default function Conversion() {
   const [loading, setLoading] = useState(false);
@@ -44,19 +45,28 @@ export default function Conversion() {
               {result.type === 'error' ? (
                 <ResultSummary
                   items={[
-                    { label: 'Valor real', value: result.actualValue },
-                    { label: 'Aproximacion', value: result.approximateValue },
-                    { label: 'Error absoluto', value: result.absoluteError },
-                    { label: 'Error relativo', value: result.relativeError },
-                    { label: 'Error porcentual', value: `${Number(result.percentageError.toFixed(8))}%` },
+                    { label: 'Valor real', latex: `p=${toLatexNumber(result.actualValue)}` },
+                    { label: 'Aproximacion', latex: `p^\\ast=${toLatexNumber(result.approximateValue)}` },
+                    { label: 'Error absoluto', latex: `E_a=${toLatexNumber(result.absoluteError)}` },
+                    { label: 'Error relativo', latex: `E_r=${toLatexNumber(result.relativeError)}` },
+                    {
+                      label: 'Error porcentual',
+                      latex: `E_{\\%}=${toLatexNumber(result.percentageError)}\\%`,
+                    },
                   ]}
                 />
               ) : (
                 <ResultSummary
                   items={[
-                    { label: 'Original', value: `${result.originalValue} (base ${result.fromBase})` },
-                    { label: 'Decimal', value: result.decimalValue },
-                    { label: 'Convertido', value: `${result.convertedValue} (base ${result.toBase})` },
+                    {
+                      label: 'Original',
+                      latex: toLatexBaseValue(result.originalValue, result.fromBase),
+                    },
+                    { label: 'Decimal', latex: `x_{10}=${toLatexNumber(result.decimalValue)}` },
+                    {
+                      label: 'Convertido',
+                      latex: toLatexBaseValue(result.convertedValue, result.toBase),
+                    },
                   ]}
                 />
               )}

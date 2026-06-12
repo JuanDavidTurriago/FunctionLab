@@ -1,5 +1,11 @@
 import { derivative, parse } from 'mathjs';
 import { mathNumber, mathTuple } from './procedure.utils.js';
+import type { ChartPoint } from './chart.utils.js';
+import {
+  findContourIntersections,
+  getSystemChartBounds,
+  sampleImplicitContour,
+} from './systemChart.utils.js';
 
 interface SystemNewtonInput {
   functionExpressions?: [string, string];
@@ -9,6 +15,17 @@ interface SystemNewtonInput {
   y0: number;
   tolerance?: number;
   maxIterations?: number;
+}
+
+interface SystemNewtonIteration {
+  iteration: number;
+  x: number;
+  y: number;
+  f1: number;
+  f2: number;
+  deltaX: number;
+  deltaY: number;
+  error: number;
 }
 
 const defaultFunctions: [string, string] = ['x^2 + y^2 - 4', 'x - y - 1'];
@@ -44,14 +61,100 @@ export const solveSystemNewton = ({
   const df2dx = derivative(f2Node, 'x');
   const df2dy = derivative(f2Node, 'y');
 
+  const evaluateSystem = (point: ChartPoint) => {
+    const scope = { x: point.x, y: point.y };
+    return {
+      value1: Number(f1Node.evaluate(scope)),
+      value2: Number(f2Node.evaluate(scope)),
+      j11: Number(df1dx.evaluate(scope)),
+      j12: Number(df1dy.evaluate(scope)),
+      j21: Number(df2dx.evaluate(scope)),
+      j22: Number(df2dy.evaluate(scope)),
+    };
+  };
+
+  const refineIntersection = (candidate: ChartPoint) => {
+    let refined = { ...candidate };
+
+    for (let step = 0; step < 12; step += 1) {
+      const { value1, value2, j11, j12, j21, j22 } = evaluateSystem(refined);
+      const determinant = j11 * j22 - j12 * j21;
+
+      if (
+        ![value1, value2, j11, j12, j21, j22, determinant].every(Number.isFinite)
+        || Math.abs(determinant) < 1e-12
+      ) {
+        break;
+      }
+
+      const deltaX = (-value1 * j22 + j12 * value2) / determinant;
+      const deltaY = (value1 * j21 - j11 * value2) / determinant;
+      refined = { x: refined.x + deltaX, y: refined.y + deltaY };
+
+      if (Math.max(Math.abs(deltaX), Math.abs(deltaY)) < 1e-10) {
+        break;
+      }
+    }
+
+    return refined;
+  };
+
   let x = x0;
   let y = y0;
-  const iterations = [];
+  const iterations: SystemNewtonIteration[] = [];
   const procedureFormulas: string[] = [
     `F(x,y)=\\begin{bmatrix}${f1Node.toTex()}\\\\${f2Node.toTex()}\\end{bmatrix}`,
     `J(x,y)=\\begin{bmatrix}${df1dx.toTex()}&${df1dy.toTex()}\\\\${df2dx.toTex()}&${df2dy.toTex()}\\end{bmatrix}`,
     `J(x_k,y_k)\\Delta_k=-F(x_k,y_k),\\qquad \\begin{bmatrix}x_{k+1}\\\\y_{k+1}\\end{bmatrix}=\\begin{bmatrix}x_k\\\\y_k\\end{bmatrix}+\\Delta_k`,
   ];
+
+  const buildResult = () => {
+    const iterationPoints = iterations.map((iteration) => ({
+      x: iteration.x,
+      y: iteration.y,
+    }));
+    const solution = { x, y };
+    const bounds = getSystemChartBounds([{ x: x0, y: y0 }, ...iterationPoints, solution]);
+    const firstContour = sampleImplicitContour(
+      (chartX, chartY) => Number(f1Node.evaluate({ x: chartX, y: chartY })),
+      bounds,
+    );
+    const secondContour = sampleImplicitContour(
+      (chartX, chartY) => Number(f2Node.evaluate({ x: chartX, y: chartY })),
+      bounds,
+    );
+    const gridStep = (bounds.maxX - bounds.minX) / 120;
+    const intersections = findContourIntersections(
+      firstContour,
+      secondContour,
+      refineIntersection,
+      gridStep,
+    );
+
+    if (
+      !intersections.some(
+        (point) => Math.hypot(point.x - solution.x, point.y - solution.y) <= gridStep,
+      )
+    ) {
+      intersections.push(solution);
+    }
+
+    return {
+      solution,
+      expressions,
+      iterations,
+      chart: {
+        bounds,
+        firstContour,
+        secondContour,
+        initialPoint: { x: x0, y: y0 },
+        iterationPoints,
+        solutionPoint: solution,
+        intersections,
+      },
+      procedure: { formulas: procedureFormulas },
+    };
+  };
 
   // En cada paso se resuelve J(x_k,y_k) * delta = -F(x_k,y_k).
   for (let iteration = 1; iteration <= maxIterations; iteration += 1) {
@@ -90,9 +193,9 @@ export const solveSystemNewton = ({
     );
 
     if (error < tolerance) {
-      return { solution: { x, y }, expressions, iterations, procedure: { formulas: procedureFormulas } };
+      return buildResult();
     }
   }
 
-  return { solution: { x, y }, expressions, iterations, procedure: { formulas: procedureFormulas } };
+  return buildResult();
 };

@@ -7,23 +7,24 @@ import RootIterationChart from '../components/charts/RootIterationChart';
 import BisectionForm from '../components/forms/BisectionForm';
 import NewtonForm from '../components/forms/NewtonForm';
 import { numericalMethodsApi } from '../services/api';
+import { toLatexNumber } from '../utils/mathFormat';
 
 const bisectionColumns = [
-  { key: 'iteration', label: 'i' },
-  { key: 'a', label: 'a' },
-  { key: 'b', label: 'b' },
-  { key: 'midpoint', label: 'xm' },
-  { key: 'value', label: 'f(xm)' },
-  { key: 'error', label: 'error' },
+  { key: 'iteration', latex: 'k' },
+  { key: 'a', latex: 'a_k' },
+  { key: 'b', latex: 'b_k' },
+  { key: 'midpoint', latex: 'x_m' },
+  { key: 'value', latex: 'f(x_m)' },
+  { key: 'error', latex: 'e_k' },
 ];
 
 const newtonColumns = [
-  { key: 'iteration', label: 'i' },
-  { key: 'x', label: 'x' },
-  { key: 'fx', label: 'f(x)' },
-  { key: 'dfx', label: "f'(x)" },
-  { key: 'next', label: 'x siguiente' },
-  { key: 'error', label: 'error' },
+  { key: 'iteration', latex: 'k' },
+  { key: 'x', latex: 'x_k' },
+  { key: 'fx', latex: 'f(x_k)' },
+  { key: 'dfx', latex: "f'(x_k)" },
+  { key: 'next', latex: 'x_{k+1}' },
+  { key: 'error', latex: 'e_k' },
 ];
 
 export default function Ecuaciones() {
@@ -68,7 +69,14 @@ export default function Ecuaciones() {
           />
           {bisectionResult && (
             <>
-              <ResultSummary items={[{ label: 'Raiz aproximada', value: bisectionResult.root }]} />
+              <ResultSummary
+                items={[
+                  {
+                    label: 'Raiz aproximada',
+                    latex: `x^\\ast=${toLatexNumber(bisectionResult.root)}`,
+                  },
+                ]}
+              />
               <MathProcedure procedure={bisectionResult.procedure} />
               <h4>Construccion grafica</h4>
               <RootIterationChart method="bisection" result={bisectionResult} />
@@ -85,7 +93,14 @@ export default function Ecuaciones() {
           />
           {newtonResult && (
             <>
-              <ResultSummary items={[{ label: 'Raiz aproximada', value: newtonResult.root }]} />
+              <ResultSummary
+                items={[
+                  {
+                    label: 'Raiz aproximada',
+                    latex: `x^\\ast=${toLatexNumber(newtonResult.root)}`,
+                  },
+                ]}
+              />
               <MathProcedure procedure={newtonResult.procedure} />
               <h4>Construccion grafica</h4>
               <RootIterationChart method="newton" result={newtonResult} />
